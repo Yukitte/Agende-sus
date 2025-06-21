@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="./imagens/icone.png" />
+  <title>AgendeSUS - Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      flex-direction:row;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 10px 30px;
+      gap: 10px;
+    }
+
+    header img {
+      height: 40px;
+    }
+
+    h1 {
+      color: #2f4f2f;
+      margin-bottom: 20px;
+    }
+
+    .login-box {
+      background-color: #f2f2f2;
+      padding: 40px 20px;
+      width: 300px;
+      margin: 40px auto;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .login-box h2 {
+      color: #2f4f2f;
+      margin-bottom: 20px;
+    }
+    .login-box label {
+      display: block;
+      text-align: left;
+      margin-bottom: 5px;
+      color: #2f4f2f;
+    }
+
+    .login-box input[type="email"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .login-box a {
+      color: #2f4f2f;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .login-box input[type="submit"] {
+      width: 100%;
+      padding: 8px;
+      background-color: #2f4f2f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .login-box .register-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .login-box .register-links a {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" height="30">
+    <br>
+    <img src="./imagens/gdf.png" alt="Logo GDF" height="30">
+  </header>
+  <h1>
+  <img src="./imagens/logo.png" alt = 'logo' height="60"></img>
+  </h1>
+  <div class="login-box">
+    <h2>Login</h2>
+    <form>
+      <label for="email">E-mail</label>
+      <input type="email" id="email" placeholder="Digite seu e-mail" required>
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha" required>
+
+      <a href="#">Esqueci minha senha</a>
+
+      <input type="submit" value="Entrar">
+
+      <div class="register-links">
+        <a href="#">Novo Usuário?</a>
+        <a href="cadastro.html">Cadastrar-se</a>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>
