@@ -176,6 +176,7 @@ class HospitalController:
                 Agendamento.data_cirurgia.between(data_inicio, data_fim),
                 Agendamento.status.in_(['agendado', 'confirmado', 'realizado'])
             ).all()
-            
+        except:
+            models.agendamento = FileNotFoundError
             # Agrupar por data
             

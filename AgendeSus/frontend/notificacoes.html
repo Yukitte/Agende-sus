@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <title>Notificações</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#1f5223', /* Cor do texto original */
+                        'sus-green': '#2f4f2f', /* Cor mais clara para elementos */
+                        'sus-light-gray': '#f2f2f2',
+                        'sus-button-green': '#1f5223', /* Cor do botão original */
+                        'sus-button-green-hover': '#16441b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+
+        /* Estilo para notificações não lidas */
+        .notificacao-nao-lida {
+            background-color: #e0f2f7; /* Um azul claro para destacar */
+            border-left: 5px solid #2196f3; /* Borda azul para não lida */
+        }
+    </style>
+</head>
+<body class="font-sans bg-white min-h-screen flex flex-col">
+
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+            <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        </div>
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home  </a>
+            <a href="solicitacao.html" class="text-sus-green-dark font-bold hover:underline">Minhas solicitações</a>
+            <a href="meus-dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+            
+        </nav>
+    </header>
+
+    <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
+        <!-- Substituindo imagem local por placeholder -->
+        <img src="imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+    </h1>
+
+    <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8 text-left">
+        <h2 class="text-sus-green-dark text-2xl font-bold mb-6">Minhas Notificações</h2>
+
+        <div class="flex justify-between items-center mb-6">
+            <span id="contadorNotificacoes" class="text-lg font-medium text-gray-700"></span>
+            <button id="btnMarcarTodasLidas"
+                    class="py-2 px-4 bg-sus-button-green text-white font-bold rounded-md cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 shadow-md">
+                Marcar Todas como Lidas
+            </button>
+        </div>
+
+        <div id="listaNotificacoes" class="space-y-4">
+            <!-- Notificações serão carregadas aqui via JavaScript -->
+            <p class="text-gray-500 text-center" id="mensagemCarregando">Carregando notificações...</p>
+        </div>
+
+        <div id="mensagemSemNotificacoes" class="text-gray-500 text-center p-4" style="display: none;">
+            Você não possui novas notificações no momento.
+        </div>
+    </div>
+
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos
+            const listaNotificacoes = document.getElementById('listaNotificacoes');
+            const mensagemCarregando = document.getElementById('mensagemCarregando');
+            const mensagemSemNotificacoes = document.getElementById('mensagemSemNotificacoes');
+            const contadorNotificacoes = document.getElementById('contadorNotificacoes');
+            const btnMarcarTodasLidas = document.getElementById('btnMarcarTodasLidas');
+            const caixaMensagem = document.getElementById('messageBox');
+
+            // ID do usuário logado (simulado, em um sistema real viria da sessão/token)
+            const userId = '1';
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'erro' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show'; // Reseta as classes e adiciona 'show'
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            /**
+             * Cria um elemento HTML para uma notificação.
+             * @param {object} notificacao - O objeto de notificação.
+             * @returns {HTMLElement} O elemento div da notificação.
+             */
+            function criarCardNotificacao(notificacao) {
+                const card = document.createElement('div');
+                card.id = `notificacao-${notificacao.id}`;
+                card.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-sm', 'flex', 'items-start', 'space-x-4');
+
+                if (!notificacao.lida) {
+                    card.classList.add('notificacao-nao-lida');
+                }
+
+                // Ícone baseado no tipo de notificação
+                let icone = '';
+                switch (notificacao.tipo) {
+                    case 'lembrete':
+                        icone = '<svg class="w-6 h-6 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                        break;
+                    case 'cancelamento':
+                        icone = '<svg class="w-6 h-6 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2A9 9 0 1112 1a9 9 0 010 18z"></path></svg>';
+                        break;
+                    case 'confirmacao':
+                        icone = '<svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                        break;
+                    default:
+                        icone = '<svg class="w-6 h-6 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                }
+
+                let prioridadeCor = '';
+                switch (notificacao.prioridade) {
+                    case 'urgente':
+                        prioridadeCor = 'text-red-600';
+                        break;
+                    case 'alta':
+                        prioridadeCor = 'text-orange-600';
+                        break;
+                    case 'normal':
+                        prioridadeCor = 'text-blue-600';
+                        break;
+                    case 'baixa':
+                        prioridadeCor = 'text-gray-500';
+                        break;
+                }
+
+                card.innerHTML = `
+                    <div class="flex-shrink-0 mt-1">
+                        ${icone}
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-lg text-gray-800">${notificacao.titulo}</h3>
+                            <span class="text-sm text-gray-500">${notificacao.data_envio}</span>
+                        </div>
+                        <p class="text-gray-700 mb-2">${notificacao.mensagem}</p>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600">Tipo: <span class="font-medium">${notificacao.tipo.charAt(0).toUpperCase() + notificacao.tipo.slice(1)}</span></span>
+                            <span class="${prioridadeCor}">Prioridade: <span class="font-medium">${notificacao.prioridade.charAt(0).toUpperCase() + notificacao.prioridade.slice(1)}</span></span>
+                            ${!notificacao.lida ? `<button data-id="${notificacao.id}" class="btn-marcar-lida text-blue-500 hover:underline">Marcar como lida</button>` : '<span class="text-green-600 font-medium">Lida</span>'}
+                        </div>
+                    </div>
+                `;
+
+                // Adiciona o evento de clique para marcar como lida individualmente
+                if (!notificacao.lida) {
+                    const btnMarcarLida = card.querySelector('.btn-marcar-lida');
+                    btnMarcarLida.addEventListener('click', () => marcarComoLida(notificacao.id));
+                }
+
+                return card;
+            }
+
+            /**
+             * Busca as notificações do usuário no backend e as exibe.
+             */
+            async function carregarNotificacoes() {
+                listaNotificacoes.innerHTML = ''; // Limpa a lista
+                mensagemCarregando.style.display = 'block'; // Mostra mensagem de carregamento
+                mensagemSemNotificacoes.style.display = 'none'; // Esconde mensagem de sem notificações
+
+                try {
+                    const resposta = await fetch(`/api/notificacoes/${userId}`);
+                    const dados = await resposta.json();
+
+                    if (resposta.ok) {
+                        mensagemCarregando.style.display = 'none'; // Esconde mensagem de carregamento
+
+                        if (dados.notificacoes && dados.notificacoes.length > 0) {
+                            let unreadCount = 0;
+                            dados.notificacoes.forEach(notificacao => {
+                                listaNotificacoes.appendChild(criarCardNotificacao(notificacao));
+                                if (!notificacao.lida) {
+                                    unreadCount++;
+                                }
+                            });
+                            contadorNotificacoes.textContent = `Você tem ${unreadCount} notificação(ões) não lida(s).`;
+                        } else {
+                            mensagemSemNotificacoes.style.display = 'block'; // Mostra mensagem de sem notificações
+                            contadorNotificacoes.textContent = 'Você não possui notificações.';
+                        }
+                    } else {
+                        showMessage(dados.message || 'Erro ao carregar notificações.', 'error');
+                        console.error('Erro ao carregar notificações:', dados);
+                        mensagemCarregando.style.display = 'none';
+                        mensagemSemNotificacoes.style.display = 'block'; // Mostra mensagem de sem notificações em caso de erro
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao carregar notificações. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                    mensagemCarregando.style.display = 'none';
+                    mensagemSemNotificacoes.style.display = 'block'; // Mostra mensagem de sem notificações em caso de erro
+                }
+            }
+
+            /**
+             * Marca uma notificação específica como lida no backend.
+             * @param {number} notificacaoId - O ID da notificação a ser marcada.
+             */
+            async function marcarComoLida(notificacaoId) {
+                try {
+                    const resposta = await fetch(`/api/notificacoes/marcar_lida/${notificacaoId}`, {
+                        method: 'PUT', // Ou PATCH, dependendo da convenção da API
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Notificação marcada como lida.', 'sucesso');
+                        // Atualiza o estado da notificação no frontend sem recarregar tudo
+                        const cardElement = document.getElementById(`notificacao-${notificacaoId}`);
+                        if (cardElement) {
+                            cardElement.classList.remove('notificacao-nao-lida');
+                            const btn = cardElement.querySelector('.btn-marcar-lida');
+                            if (btn) {
+                                btn.outerHTML = '<span class="text-green-600 font-medium">Lida</span>';
+                            }
+                            // Atualiza o contador de não lidas
+                            carregarNotificacoes();
+                        }
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao marcar notificação como lida.', 'error');
+                        console.error('Erro ao marcar como lida:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao marcar como lida. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                }
+            }
+
+            /**
+             * Marca todas as notificações do usuário como lidas no backend.
+             */
+            btnMarcarTodasLidas.addEventListener('click', async () => {
+                if (!confirm('Tem certeza que deseja marcar todas as notificações como lidas?')) {
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch(`/api/notificacoes/marcar_todas_lidas/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Todas as notificações foram marcadas como lidas!', 'sucesso');
+                        carregarNotificacoes(); // Recarrega a lista para refletir as mudanças
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao marcar todas como lidas.', 'error');
+                        console.error('Erro ao marcar todas como lidas:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao marcar todas como lidas. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                }
+            });
+
+            // Carrega as notificações quando a página é carregada
+            carregarNotificacoes();
+        });
+    </script>
+</body>
+</html>

@@ -1,191 +1,358 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  
 <head>
-  <link rel="icon" type="image/png" href="./imagens/icone.png" />
-  <meta charset="UTF-8">
-  <title>Verificar disponibilidade</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      background-color: #f9f9f9;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgendeSUS - Verificar Disponibilidade</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#1f5223', /* Original do cabeçalho/títulos */
+                        'sus-green': '#007744',     /* Verde do sidebar, mais vibrante */
+                        'sus-light-gray': '#f9f9f9', /* Fundo principal ou de elementos */
+                        'sus-button-green': '#1f5223', /* Botões principais */
+                        'sus-button-green-hover': '#16441b',
+                        'sus-sidebar-bg': '#ffffff', /* Fundo do sidebar */
+                        'sus-table-header': '#f2f2f2', /* Fundo de cabeçalho de tabela */
+                        'sus-highlight-day': '#b8e0f5', /* Cor para dias destacados no calendário */
+                        'sus-selected-day': '#007bff', /* Cor para dia selecionado */
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            display: flex;
+            flex-direction: column; /* Coloca o cabeçalho no topo */
+            min-height: 100vh;
+            background-color: #f9f9f9;
+        }
 
-    /* MENU LATERAL */
-    .sidebar {
-      width: 200px;
-      background-color: white;
-      padding: 20px;
-      border-right: 1px solid #ddd;
-      height: 100vh;
-      box-sizing: border-box;
-    }
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
 
-    .sidebar img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-    }
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
 
-    .sidebar h3 {
-      margin: 10px 0;
-    }
+        .message-box.show {
+            opacity: 1;
+        }
 
-    .sidebar a {
-      display: block;
-      margin: 10px 0;
-      text-decoration: none;
-      color: black;
-    }
+        /* Ajustes para o layout principal com sidebar e conteúdo */
+        .layout-wrapper {
+            display: flex;
+            flex-grow: 1; /* Permite que o wrapper ocupe o espaço restante */
+        }
 
-    .sidebar .settings {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      font-size: 14px;
-    }
-
-    /* CONTEÚDO PRINCIPAL */
-    .main-content {
-      flex-grow: 1;
-      padding: 30px;
-      text-align: center;
-    }
-
-    .main-content h1 {
-      margin-bottom: 5px;
-    }
-
-    .main-content p {
-      margin-top: 0;
-      color: #444;
-    }
-
-    /* BARRA DE BUSCA */
-    .search-bar {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-    }
-
-    .search-bar input[type="text"] {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 20px 0 0 20px;
-      outline: none;
-    }
-
-    .search-bar button {
-      padding: 6px 10px;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 0 20px 20px 0;
-      cursor: pointer;
-    }
-
-    /* CALENDÁRIO */
-    .calendar {
-      margin-top: 30px;
-      display: inline-block;
-    }
-
-    .calendar table {
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .calendar th, .calendar td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      width: 14.2%;
-      text-align: center;
-    }
-
-    .calendar th {
-      background-color: #f2f2f2;
-    }
-
-    .calendar .highlight {
-      background-color: #b8e0f5;
-    }
-
-    .footer-note {
-      font-size: 10px;
-      color: gray;
-      margin-top: 5px;
-    }
-
-    /* ÍCONES */
-    .icon {
-      margin-right: 5px;
-    }
-
-  </style>
+        /* Custom scrollbar for chat messages */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans bg-white">
 
-  <div class="sidebar">
-    <div>
-      <a href="home.html">casa</a>
+    <!-- Cabeçalho -->
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300 bg-white shadow-sm">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="https://placehold.co/40x40/1f5223/ffffff?text=SUS" alt="Logo SUS" class="h-10 mr-2 rounded">
+            <img src="https://placehold.co/40x40/1f5223/ffffff?text=GDF" alt="Logo GDF" class="h-10 rounded">
+        </div>
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home</a>
+            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="meus_dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+            <a href="chat.html" class="text-sus-green-dark font-bold hover:underline">Chat</a>
+            <a href="notificacoes.html" class="text-sus-green-dark font-bold hover:underline">Notificações</a> <!-- Adicionando Notificações -->
+        </nav>
+    </header>
+
+    <div class="layout-wrapper">
+        <!-- Menu Lateral (Sidebar) -->
+        <div class="sidebar w-52 bg-sus-sidebar-bg p-5 border-r border-gray-300 flex flex-col justify-between">
+            <div>
+                <a href="home.html" class="text-sus-green font-bold text-sm mb-4 block flex items-center">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l2 2M19 10v10a1 1 0 01-1 1h-3m-7 0v-6a1 1 0 00-1-1H9a1 1 0 00-1 1v6m0 0H5"></path></svg>
+                    Home
+                </a>
+            </div>
+            <div class="flex flex-col items-center mb-auto">
+                <img src="https://placehold.co/80x80/1f5223/ffffff?text=User" alt="Foto do Usuário" class="w-20 h-20 rounded-full mb-2 border-2 border-sus-green-dark">
+                <h3 id="sidebarUserName" class="text-lg font-bold text-gray-800 mb-4">Carregando...</h3>
+                <a href="meus_dados.html" class="block my-2 text-gray-700 hover:text-sus-green-dark transition-colors duration-150">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Pessoal
+                </a>
+                <a href="agendamento.html" class="block my-2 text-gray-700 font-bold hover:text-sus-green-dark transition-colors duration-150">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h.01M12 11h.01M15 11h.01M7 16h.01M10 16h.01M13 16h.01M16 16h.01M9 21h6a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Agendamento
+                </a>
+                <a href="#" class="block my-2 text-gray-700 hover:text-sus-green-dark transition-colors duration-150">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M12 16h.01"></path></svg>
+                    Prontuário
+                </a>
+            </div>
+            <div class="mt-auto">
+                <a href="configuracoes.html" class="text-sm text-gray-600 hover:text-sus-green-dark transition-colors duration-150 flex items-center">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.32 1.07.545 1.724.814z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Configurações
+                </a>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="main-content flex-grow p-8 text-center relative">
+            <div class="search-bar absolute top-5 right-8 flex items-center">
+                <input type="text" placeholder="Buscar"
+                       class="p-2 border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button class="p-2 bg-sus-button-green text-white rounded-r-full cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+            </div>
+
+            <h1 class="text-sus-green-dark text-3xl font-bold mb-1">Agende sua consulta</h1>
+            <p class="text-gray-600 mb-8">Verifique a disponibilidade do dia</p>
+
+            <div class="calendar-nav flex justify-between items-center max-w-xl mx-auto mb-4">
+                <button id="prevMonthBtn" class="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <h2 id="currentMonthYear" class="text-xl font-semibold text-gray-800"></h2>
+                <button id="nextMonthBtn" class="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <div class="calendar inline-block w-full max-w-xl bg-white rounded-lg shadow-md p-4">
+                <table id="calendarTable" class="border-collapse w-full">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Dom</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Seg</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Ter</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Qua</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Qui</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Sex</th>
+                            <th class="border border-gray-300 p-3 text-sus-green-dark bg-sus-table-header font-semibold">Sáb</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dias do calendário serão gerados aqui por JavaScript -->
+                    </tbody>
+                </table>
+                <div class="footer-note text-xs text-gray-500 mt-2">©AgendeSUS.br.com</div>
+            </div>
+        </div>
     </div>
-    <img src="./imagens/img.jpg" alt="Foto Fernanda">
-    <h3>Fernanda</h3>
-    <a href="#">Pessoal</a>
-    <a href="#">Agendamento</a>
-    <a href="#">Prontuário</a>
-    <div class="settings">
-      ⚙️ Configurações
-    </div>
-  </div>
 
-  <div class="main-content">
-    <div class="search-bar">
-      <input type="text" placeholder="Buscar">
-      <button>🔍 Buscar</button>
-    </div>
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
 
-    <h1>Agende sua consulta</h1>
-    <p>Verifique a disponibilidade do dia</p>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos do DOM
+            const sidebarUserName = document.getElementById('sidebarUserName');
+            const currentMonthYear = document.getElementById('currentMonthYear');
+            const calendarTableBody = document.querySelector('#calendarTable tbody');
+            const prevMonthBtn = document.getElementById('prevMonthBtn');
+            const nextMonthBtn = document.getElementById('nextMonthBtn');
+            const caixaMensagem = document.getElementById('messageBox');
 
-    <div class="calendar">
-      <table>
-        <thead>
-          <tr>
-            <th>Domingo</th>
-            <th>Segunda-Feira</th>
-            <th>Terça-Feira</th>
-            <th>Quarta-Feira</th>
-            <th>Quinta-Feira</th>
-            <th>Sexta-Feira</th>
-            <th>Sábado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="gray">27</td><td class="gray">28</td><td class="gray">29</td><td class="gray">30</td><td class="highlight">1</td><td class="highlight">2</td><td class="highlight">3</td>
-          </tr>
-          <tr>
-            <td class="highlight">4</td><td class="highlight">5</td><td class="highlight">6</td><td class="highlight">7</td><td class="highlight">8</td><td class="highlight">9</td><td class="highlight">10</td>
-          </tr>
-          <tr>
-            <td class="highlight">11</td><td class="highlight">12</td><td class="highlight">13</td><td class="highlight">14</td><td class="highlight">15</td><td class="highlight">16</td><td>17</td>
-          </tr>
-          <tr>
-            <td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td>
-          </tr>
-          <tr>
-            <td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="footer-note">©Calendario.br.com</div>
-    </div>
-  </div>
+            // URL base do seu backend Flask
+            const backendBaseUrl = 'http://127.0.0.1:5000';
 
+            // ID do usuário logado (simulado, em um sistema real viria da sessão/token)
+            const usuarioLogadoId = 1;
+
+            let dataAtual = new Date(); // Data que o calendário está exibindo
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'error' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show';
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000);
+            }
+
+            /**
+             * Busca os dados do usuário no backend e atualiza o nome na sidebar.
+             */
+            async function carregarNomeUsuarioSidebar() {
+                try {
+                    const resposta = await fetch(`${backendBaseUrl}/api/meus_dados/${usuarioLogadoId}`);
+                    const dados = await resposta.json();
+
+                    if (resposta.ok && dados.nome) {
+                        sidebarUserName.textContent = dados.nome.split(' ')[0]; // Exibe apenas o primeiro nome
+                    } else {
+                        console.error('Erro ao carregar nome do usuário para a sidebar:', dados.message);
+                        sidebarUserName.textContent = 'Usuário';
+                    }
+                } catch (erro) {
+                    console.error('Erro de rede ao carregar nome do usuário para a sidebar:', erro);
+                    sidebarUserName.textContent = 'Usuário';
+                }
+            }
+
+            /**
+             * Gera e exibe o calendário para o mês e ano fornecidos.
+             * @param {Date} data - Um objeto Date contendo o mês e ano a serem exibidos.
+             */
+            function gerarCalendario(data) {
+                calendarTableBody.innerHTML = ''; // Limpa o calendário existente
+
+                const primeiroDiaDoMes = new Date(data.getFullYear(), data.getMonth(), 1);
+                const ultimoDiaDoMes = new Date(data.getFullYear(), data.getMonth() + 1, 0);
+                const numDiasMesAnterior = primeiroDiaDoMes.getDay(); // Dias da semana (0=Dom, 6=Sáb)
+                const numDiasMesAtual = ultimoDiaDoMes.getDate();
+
+                currentMonthYear.textContent = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+                let diaContador = 1;
+                let diaAnteriorContador = new Date(data.getFullYear(), data.getMonth(), 0).getDate() - numDiasMesAnterior + 1;
+
+                for (let i = 0; i < 6; i++) { // Max 6 semanas para um mês
+                    const linha = document.createElement('tr');
+                    for (let j = 0; j < 7; j++) { // 7 dias da semana
+                        const celula = document.createElement('td');
+                        celula.classList.add('border', 'border-gray-300', 'p-3', 'text-center', 'cursor-pointer', 'relative'); // Adicionado 'relative' para o span de disponibilidade
+
+                        if (i === 0 && j < numDiasMesAnterior) {
+                            // Dias do mês anterior
+                            celula.textContent = diaAnteriorContador;
+                            celula.classList.add('text-gray-400');
+                            diaAnteriorContador++;
+                        } else if (diaContador <= numDiasMesAtual) {
+                            // Dias do mês atual
+                            celula.textContent = diaContador;
+                            celula.classList.add('text-gray-800', 'hover:bg-gray-100', 'transition-colors');
+                            
+                            // Exemplo de marcação de "highlight" para todos os dias do mês atual
+                            // Em um cenário real, você buscaria a disponibilidade do backend
+                            celula.classList.add('bg-white'); // Cor de fundo padrão
+                            celula.classList.add('sus-highlight-day'); // Marca todos os dias do mês atual como "highlight"
+
+                            // Se for o dia atual, adiciona um estilo extra
+                            const hoje = new Date();
+                            if (data.getFullYear() === hoje.getFullYear() &&
+                                data.getMonth() === hoje.getMonth() &&
+                                diaContador === hoje.getDate()) {
+                                celula.classList.add('border-2', 'border-sus-selected-day', 'font-bold');
+                            }
+
+                            // Adiciona um placeholder para a disponibilidade
+                            const spanDisponibilidade = document.createElement('span');
+                            spanDisponibilidade.classList.add('block', 'text-xs', 'mt-1', 'font-medium');
+                            // Simulação de disponibilidade
+                            if (Math.random() > 0.6) { // 40% de chance de ter vagas
+                                spanDisponibilidade.textContent = '3 Vagas';
+                                spanDisponibilidade.classList.add('text-green-600');
+                            } else {
+                                spanDisponibilidade.textContent = 'Lotado';
+                                spanDisponibilidade.classList.add('text-red-600');
+                            }
+                            celula.appendChild(spanDisponibilidade);
+
+                            // Adiciona evento de clique para seleção do dia (exemplo)
+                            celula.dataset.day = diaContador;
+                            celula.dataset.month = data.getMonth() + 1;
+                            celula.dataset.year = data.getFullYear();
+                            celula.addEventListener('click', selecionarDia);
+
+                            diaContador++;
+                        } else {
+                            // Dias do próximo mês
+                            celula.textContent = diaContador - numDiasMesAtual;
+                            celula.classList.add('text-gray-400');
+                            diaContador++;
+                        }
+                        linha.appendChild(celula);
+                    }
+                    calendarTableBody.appendChild(linha);
+
+                    if (diaContador > numDiasMesAtual && numDiasMesAnterior + numDiasMesAtual + (7 - (numDiasMesAnterior + numDiasMesAtual) % 7) >= (i + 1) * 7) {
+                        break; // Para de gerar linhas se todos os dias do mês atual foram adicionados
+                    }
+                }
+            }
+
+            /**
+             * Lida com a seleção de um dia no calendário.
+             * @param {Event} evento - O evento de clique.
+             */
+            function selecionarDia(evento) {
+                const dia = evento.currentTarget.dataset.day;
+                const mes = evento.currentTarget.dataset.month;
+                const ano = evento.currentTarget.dataset.year;
+                const dataSelecionada = `${dia}/${mes}/${ano}`;
+                showMessage(`Dia selecionado: ${dataSelecionada}`, 'info');
+
+                // Aqui você integraria a lógica para buscar horários disponíveis para o dia
+                console.log(`Buscar horários para: ${dataSelecionada}`);
+            }
+
+            // Event listeners para navegar entre os meses
+            prevMonthBtn.addEventListener('click', () => {
+                dataAtual.setMonth(dataAtual.getMonth() - 1);
+                gerarCalendario(dataAtual);
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                dataAtual.setMonth(dataAtual.getMonth() + 1);
+                gerarCalendario(dataAtual);
+            });
+
+            // Carrega o nome do usuário e gera o calendário ao carregar a página
+            carregarNomeUsuarioSidebar();
+            gerarCalendario(dataAtual);
+        });
+    </script>
 </body>
 </html>

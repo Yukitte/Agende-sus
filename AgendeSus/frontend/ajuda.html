@@ -1,190 +1,348 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="./imagens/icone.png" />
-  <title>Chat</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat de Ajuda</title>
+    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Aria l', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#007744', /* Cor verde original da sidebar */
+                        'sus-green': '#2f4f2f', /* Cor mais clara para elementos */
+                        'sus-light-gray': '#f9fdf9', /* Cor de fundo da sidebar original */
+                        'sus-chat-bubble': '#d1e7dd', /* Um verde claro para o usuário */
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column; /* Alterado para layout de coluna */
+            min-height: 100vh; /* Garante que o corpo ocupa toda a altura da viewport */
+            background-color: #f0f2f5; /* Um fundo suave para a página */
+        }
 
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background-color: #f9fdf9;
-      border-right: 1px solid #ddd;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
 
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #007744;
-    }
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
 
-    .search-box {
-      margin-bottom: 20px;
-    }
+        .message-box.show {
+            opacity: 1;
+        }
 
-    .search-box input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-    }
+        /* Ajustes para a área de chat para ser um componente único */
+        .chat-container {
+            width: 100%;
+            max-width: 600px; /* Limita a largura para melhor visualização */
+            height: calc(90vh - 80px); /* Ajustado para considerar a altura do header */
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Garante que o conteúdo não vaze */
+            margin: 20px auto; /* Centraliza e adiciona margem */
+        }
 
-    .contact {
-      display: flex;
-      align-items: center;
-      padding: 10px 0;
-      cursor: pointer;
-      border-top: 1px dashed #ccc;
-    }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .contact img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
+        .message {
+            max-width: 75%; /* Ajustado para dar um pouco mais de espaço */
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 8px 0; /* Ajustado para espaçamento */
+            font-size: 0.95rem; /* Levemente maior */
+            display: inline-block;
+        }
 
-    .contact-details {
-      display: flex;
-      flex-direction: column;
-    }
+        .from-bot {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+            border-top-left-radius: 3px; /* Canto superior esquerdo menos arredondado */
+        }
 
-    /* Chat area */
-    .chat-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-      background: #fff;
-    }
-
-    .chat-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-    }
-
-    .chat-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-
-    .chat-header h3 {
-      margin: 0;
-    }
-
-    .chat-messages {
-      flex-grow: 1;
-      padding: 20px 0;
-      overflow-y: auto;
-    }
-
-    .message {
-      max-width: 60%;
-      padding: 10px 15px;
-      border-radius: 15px;
-      margin: 10px 0;
-      font-size: 14px;
-      display: inline-block;
-    }
-
-    .from-bot {
-      background-color: #eee;
-      align-self: flex-start;
-    }
-
-    .from-user {
-      background-color: #82c4dd;
-      color: #000;
-      align-self: flex-end;
-      margin-left: auto;
-    }
-
-    .chat-input {
-      display: flex;
-      align-items: center;
-      border-top: 1px solid #ddd;
-      padding: 10px;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      margin-right: 10px;
-    }
-
-    .chat-input button {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-    }
-  </style>
+        .from-user {
+            background-color: #d1e7dd; /* Um verde claro para o usuário */
+            color: #333;
+            align-self: flex-end;
+            margin-left: auto;
+            border-top-right-radius: 3px; /* Canto superior direito menos arredondado */
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans bg-white">
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>AgendeSUS</h2>
-    <div class="search-box">
-      <input type="text" placeholder="Tire suas dúvidas...">
-    </div>
-    <div class="contact">
-      <img src="./imagens/ia.png" alt="Helena">
-      <div class="contact-details">
-        <strong>Helena</strong>
-        <span style="font-size: 12px; color: #555;">Sua IA de saúde</span>
-      </div>
-    </div>
-  </div>
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300 bg-white">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 mr-2 rounded">
+            <img src="imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        </div>
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home</a>
+            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="meus_dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+            <a href="chat.html" class="text-sus-green-dark font-bold hover:underline">Chat</a> <!-- Adicionado link para o chat -->
+        </nav>
+    </header>
 
-  <!-- Chat Area -->
-  <div class="chat-area">
-    <div class="chat-header">
-      <img src="./imagens/ia.png" alt="Helena">
-      <h3>Helena</h3>
+    <div class="chat-container">
+        <!-- Área do Chat -->
+        <div class="chat-area flex-1 flex flex-col justify-between">
+            <div class="chat-header flex items-center border-b border-gray-200 p-4">
+                <img id="chatHeaderImg" src="./imagens/ia.png" alt="Helena" class="w-12 h-12 rounded-full mr-3 border-2 border-sus-green-dark">
+                <h3 id="chatHeaderName" class="m-0 font-bold text-lg text-gray-800">Helena</h3>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <!-- Mensagens serão carregadas aqui via JavaScript -->
+            </div>
+
+            <div class="chat-input flex items-center border-t border-gray-200 p-4">
+                <input type="text" id="mensagemInput" placeholder="Escreva sua mensagem..."
+                       class="flex-1 p-3 border border-gray-300 rounded-full mr-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="enviarMensagemBtn" title="Enviar" class="bg-blue-500 text-white rounded-full p-3 flex items-center justify-center hover:bg-blue-600 transition-colors duration-200 shadow-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+                <button id="anexarArquivoBtn" title="Anexar" class="bg-gray-200 text-gray-700 rounded-full p-3 ml-2 flex items-center justify-center hover:bg-gray-300 transition-colors duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.485L20.5 13.5"></path></svg>
+                </button>
+                <button id="gravarVozBtn" title="Gravar voz" class="bg-gray-200 text-gray-700 rounded-full p-3 ml-2 flex items-center justify-center hover:bg-gray-300 transition-colors duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-14 0v-1a1 1 0 011-1h12a1 10 011 1v1z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-14 0v-1a1 1 0 011-1h12a1 1 0 011 1v1zM8 21h8a1 10 001-1v-2a1 1 0 00-1-1H8a1 1 0 00-1 1v2a1 10 001 1z"></path></svg>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="chat-messages">
-      <div class="message from-bot">
-        Olá, Sou Helena sua IA da área da saúde, irei te ajudar em marcações e nas suas dúvidas!
-      </div>
-      <br>
-      <div class="message from-bot">
-        Como posso te ajudar hoje?
-      </div>
-      <br>
-      <div class="message from-user">
-        Não estou conseguindo marcar minha consulta
-      </div>
-      <br>
-      <div class="message from-bot">
-        Ok, irei te ajudar!
-      </div>
-    </div>
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
 
-    <div class="chat-input">
-      <input type="text" placeholder="Escreva sua mensagem...">
-      <button title="Enviar">📤</button>
-      <button title="Anexar">📎</button>
-      <button title="Gravar voz">🎤</button>
-    </div>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos do DOM
+            const chatHeaderImg = document.getElementById('chatHeaderImg');
+            const chatHeaderName = document.getElementById('chatHeaderName');
+            const chatMessages = document.getElementById('chatMessages');
+            const mensagemInput = document.getElementById('mensagemInput');
+            const enviarMensagemBtn = document.getElementById('enviarMensagemBtn');
+            const caixaMensagem = document.getElementById('messageBox');
 
+            // ID do usuário logado (simulado, em um sistema real viria da sessão/token)
+            const usuarioLogadoId = 1; // Supondo que o paciente@teste.com tem ID 1
+            const agendamentoHelenaId = 0; // ID fictício para a conversa com Helena (IA)
+
+            // Define o agendamento ativo para Helena imediatamente
+            let agendamentoAtivoId = agendamentoHelenaId; 
+
+            // Configura o cabeçalho do chat para Helena
+            chatHeaderName.textContent = "Helena";
+            chatHeaderImg.src = "./imagens/ia.png"; // Certifique-se de que o caminho da imagem está correto
+
+            // URL base do seu backend Flask (ajuste se seu servidor estiver em outra porta ou domínio)
+            const backendBaseUrl = 'http://127.0.0.1:5000'; 
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'erro' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show'; // Reseta as classes e adiciona 'show'
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            /**
+             * Cria um elemento HTML para uma mensagem individual no chat.
+             * @param {object} mensagem - Objeto da mensagem.
+             * @param {number} usuarioAtualId - O ID do usuário logado.
+             * @returns {HTMLElement} O elemento div da mensagem.
+             */
+            function criarBolhaMensagem(mensagem, usuarioAtualId) {
+                const bolha = document.createElement('div');
+                bolha.classList.add('message', 'p-3', 'rounded-lg', 'my-2', 'text-sm', 'relative'); 
+
+                if (mensagem.remetente_id === usuarioAtualId) {
+                    bolha.classList.add('from-user', 'bg-sus-chat-bubble', 'text-black', 'self-end', 'ml-auto');
+                } else {
+                    bolha.classList.add('from-bot', 'bg-gray-100', 'self-start');
+                }
+
+                // Conteúdo da mensagem
+                let conteudoHtml = `<p class="mb-1">${mensagem.mensagem}</p>`;
+                if (mensagem.tipo_mensagem === 'arquivo' && mensagem.arquivo_url) {
+                    conteudoHtml += `<a href="${mensagem.arquivo_url}" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        Anexo
+                                    </a>`;
+                }
+                
+                // Timestamp
+                const dataEnvio = new Date(mensagem.data_envio);
+                const horaMinuto = dataEnvio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                bolha.innerHTML = `
+                    ${conteudoHtml}
+                    <span class="text-xs text-gray-500 block text-right">${horaMinuto}</span>
+                `;
+
+                return bolha;
+            }
+
+            /**
+             * Carrega as mensagens de Helena (IA) automaticamente ao iniciar.
+             */
+            async function iniciarConversaComHelena() {
+                chatMessages.innerHTML = ''; // Limpa as mensagens
+                
+                try {
+                    // Usando URL absoluta
+                    const resposta = await fetch(`${backendBaseUrl}/api/chat/${agendamentoHelenaId}/messages`);
+                    const dados = await resposta.json();
+
+                    if (resposta.ok && dados.mensagens) {
+                        if (dados.mensagens.length > 0) {
+                            dados.mensagens.forEach(mensagem => {
+                                chatMessages.appendChild(criarBolhaMensagem(mensagem, usuarioLogadoId));
+                            });
+                            // Rola para a última mensagem
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        } else {
+                            chatMessages.innerHTML = '<p class="text-gray-500 text-center py-4">Inicie sua conversa com Helena!</p>';
+                        }
+                        // Marca as mensagens como lidas após carregá-las
+                        await marcarMensagensComoLidas(agendamentoHelenaId, usuarioLogadoId);
+
+                    } else {
+                        showMessage(dados.message || 'Erro ao carregar mensagens iniciais da Helena.', 'error');
+                        console.error('Erro ao carregar mensagens iniciais:', dados);
+                        chatMessages.innerHTML = '<p class="text-red-500 text-center py-4">Erro ao carregar mensagens.</p>';
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao carregar mensagens iniciais da Helena. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                    chatMessages.innerHTML = '<p class="text-red-500 text-center py-4">Erro de rede ao carregar mensagens.</p>';
+                }
+            }
+
+            /**
+             * Envia uma nova mensagem.
+             */
+            enviarMensagemBtn.addEventListener('click', async () => {
+                const mensagemConteudo = mensagemInput.value.trim();
+                if (!mensagemConteudo) {
+                    showMessage('Por favor, digite uma mensagem.', 'error');
+                    return;
+                }
+
+                try {
+                    // Usando URL absoluta
+                    const resposta = await fetch(`${backendBaseUrl}/api/chat/${agendamentoAtivoId}/send`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            remetente_id: usuarioLogadoId,
+                            mensagem: mensagemConteudo,
+                            tipo_mensagem: 'texto'
+                        }),
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok && dadosResposta.mensagem) {
+                        // Adiciona a nova mensagem do usuário ao chat na UI
+                        chatMessages.appendChild(criarBolhaMensagem(dadosResposta.mensagem, usuarioLogadoId));
+                        mensagemInput.value = ''; // Limpa o input
+                        chatMessages.scrollTop = chatMessages.scrollHeight; // Rola para a última mensagem
+
+                        // Se a resposta da IA está presente, adicione-a após um pequeno atraso
+                        if (dadosResposta.resposta_ia) {
+                            setTimeout(() => {
+                                chatMessages.appendChild(criarBolhaMensagem(dadosResposta.resposta_ia, dadosResposta.resposta_ia.remetente_id));
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }, 500); // Pequeno atraso para simular "digitação" da IA
+                        }
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao enviar mensagem.', 'error');
+                        console.error('Erro ao enviar mensagem:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao enviar mensagem. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                }
+            });
+
+            // Permite enviar mensagem pressionando Enter
+            mensagemInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Previne nova linha no input
+                    enviarMensagemBtn.click();
+                }
+            });
+
+            /**
+             * Marca todas as mensagens não lidas de um agendamento como lidas para o usuário.
+             * @param {number} agendamentoId - O ID do agendamento.
+             * @param {number} usuarioId - O ID do usuário.
+             */
+            async function marcarMensagensComoLidas(agendamentoId, usuarioId) {
+                try {
+                    // Usando URL absoluta
+                    await fetch(`${backendBaseUrl}/api/chat/${agendamentoId}/mark_read/${usuarioId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                } catch (error) {
+                    console.error('Erro ao marcar mensagens como lidas:', error);
+                }
+            }
+
+            // Inicia a conversa com Helena automaticamente
+            iniciarConversaComHelena();
+        });
+    </script>
 </body>
 </html>

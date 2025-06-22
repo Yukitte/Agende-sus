@@ -1,143 +1,256 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="./imagens/icone.png" />
-  <title>Cadastro</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fff;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="icon" type="image/png" href="./imagens/icone.png" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green': '#2f4f2f',
+                        'sus-light-gray': '#f2f2f2',
+                        'sus-blue': '#0c83b5', /* Cor do botão de cadastro original */
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for the message box */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Green for success */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
 
-    header {
-      display: flex;
-      flex-direction:row;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 10px 30px;
-      gap: 10px;
-    }
+        .message-box.error {
+            background-color: #f44336; /* Red for error */
+        }
 
-    header img {
-      height: 40px;
-    }
-
-    h1 {
-      color: #2f4f2f;
-      margin-bottom: 20px;
-    }
-
-    .cadastro-box {
-      background-color: #f2f2f2;
-      padding: 40px 20px;
-      width: 340px;
-      margin: 40px auto;
-      border-radius: 30px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    .cadastro-box h2 {
-      color: #2f4f2f;
-      margin-bottom: 20px;
-    }
-
-    .cadastro-box label {
-      display: block;
-      text-align: left;
-      margin-bottom: 5px;
-      color: #2f4f2f;
-      font-weight: bold;
-    }
-
-    .cadastro-box input[type="text"],
-    .cadastro-box input[type="email"],
-    .cadastro-box input[type="password"] {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .cadastro-box small {
-      display: block;
-      font-size: 12px;
-      color: #444;
-      margin-top: -10px;
-      margin-bottom: 10px;
-    }
-
-    .cadastro-box input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      background-color: #0c83b5;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .cadastro-box .login-link {
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .cadastro-box .login-link a {
-      font-weight: bold;
-      color: #2f4f2f;
-      text-decoration: none;
-    }
-
-    .cadastro-box .section-title {
-      color: #2f4f2f;
-      font-weight: bold;
-      margin-top: 20px;
-      margin-bottom: 5px;
-    }
-  </style>
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans bg-white text-center min-h-screen flex flex-col">
 
-  <header>
-    <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" height="30">
-    <img src="./imagens/gdf.png" alt="Logo GDF" height="30">
-  </header>
+    <header class="flex flex-row justify-start items-center p-4 gap-4">
+        <!-- Substituindo imagens locais por placeholders ou SVGs se possível -->
+        <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+        <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
 
-  <h1>
-  <img src="./imagens/logo.png" alt = 'logo' height="60"></img>
-  </h1>
+        
+    </header>
 
-  <div class="cadastro-box">
-    <h2>Cadastro</h2>
-    <form>
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" placeholder="Digite seu nome" required>
+    <h1 class="text-sus-green mb-8 flex items-center justify-center">
+        <!-- Substituindo imagem local por placeholder ou SVG se possível -->
+        <img src="./imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+        
+    </h1>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="Digite seu e-mail" required>
+    <div class="cadastro-box bg-sus-light-gray p-8 w-96 mx-auto rounded-3xl shadow-lg flex flex-col items-center">
+        <h2 class="text-sus-green mb-6 text-2xl font-bold">Cadastro</h2>
+        <form id="registrationForm" class="w-full">
+            <div class="mb-4 text-left">
+                <label for="nome" class="block text-sus-green mb-1 text-sm font-medium">Nome Completo</label>
+                <input type="text" id="nome" placeholder="Digite seu nome completo" required
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
-      <label for="telefone">Telefone</label>
-      <input type="text" id="telefone" placeholder="(xx) xxxxx - xxxx" required>
+            <div class="mb-4 text-left">
+                <label for="email" class="block text-sus-green mb-1 text-sm font-medium">Email</label>
+                <input type="email" id="email" placeholder="Digite seu e-mail" required
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" placeholder="Digite sua senha" required>
+            <div class="mb-4 text-left">
+                <label for="cpf" class="block text-sus-green mb-1 text-sm font-medium">CPF</label>
+                <input type="text" id="cpf" placeholder="xxx.xxx.xxx-xx" required maxlength="14"
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
-      <div class="section-title">Número do prontuario</div>
-      <small>Você pode encontrar esse número no seu cartão de paciente</small>
-      <input type="text" id="prontuario" placeholder="PRT-20230458" required>
+            <div class="mb-4 text-left">
+                <label for="telefone" class="block text-sus-green mb-1 text-sm font-medium">Telefone</label>
+                <input type="tel" id="telefone" placeholder="(xx) xxxxx-xxxx" required maxlength="15"
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
-      <input type="submit" value="Cadastrar">
+            <div class="mb-4 text-left">
+                <label for="dataNascimento" class="block text-sus-green mb-1 text-sm font-medium">Data de Nascimento</label>
+                <input type="date" id="dataNascimento" required
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
-      <div class="login-link">
-        Já tem login? <a href="login.html">Login</a>
-      </div>
-    </form>
-  </div>
+            <div class="mb-4 text-left">
+                <label for="password" class="block text-sus-green mb-1 text-sm font-medium">Senha</label>
+                <input type="password" id="password" placeholder="Crie sua senha" required
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
 
+            <div class="mb-4 text-left">
+                <label for="confirmPassword" class="block text-sus-green mb-1 text-sm font-medium">Confirmar Senha</label>
+                <input type="password" id="confirmPassword" placeholder="Confirme sua senha" required
+                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+            </div>
+
+            <div class="section-title text-sus-green font-bold mt-5 mb-2">Número do Cartão SUS</div>
+            <small class="block text-sm text-gray-700 mb-4">Você pode encontrar esse número no seu cartão de paciente</small>
+            <input type="text" id="cartaoSus" placeholder="Ex: 700xxxxxxxxxxxx" required maxlength="15"
+                   class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+
+            <button type="submit"
+                    class="w-full py-2 bg-sus-blue text-white rounded-md mt-6 cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-md font-bold">
+                Cadastrar
+            </button>
+
+            <div class="login-link mt-5 text-sm">
+                Já tem login? <a href="login.html" class="text-sus-green font-bold hover:underline">Login</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Message Box for notifications -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registrationForm = document.getElementById('registrationForm');
+            const nomeInput = document.getElementById('nome');
+            const emailInput = document.getElementById('email');
+            const cpfInput = document.getElementById('cpf');
+            const telefoneInput = document.getElementById('telefone');
+            const dataNascimentoInput = document.getElementById('dataNascimento');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const cartaoSusInput = document.getElementById('cartaoSus');
+            const messageBox = document.getElementById('messageBox');
+
+            /**
+             * Displays a message in the message box.
+             * @param {string} message - The message to display.
+             * @param {string} type - 'success' or 'error' to determine the styling.
+             */
+            function showMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box show'; // Reset classes and add 'show'
+                if (type === 'error') {
+                    messageBox.classList.add('error');
+                } else {
+                    messageBox.classList.remove('error');
+                }
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000); // Hide after 3 seconds
+            }
+
+            // Input masking for CPF and Telefone
+            cpfInput.addEventListener('input', (event) => {
+                let value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (value.length > 9) {
+                    value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+                } else if (value.length > 6) {
+                    value = value.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
+                } else if (value.length > 3) {
+                    value = value.replace(/^(\d{3})(\d{3})$/, '$1.$2');
+                }
+                event.target.value = value;
+            });
+
+            telefoneInput.addEventListener('input', (event) => {
+                let value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+                if (value.length > 10) {
+                    value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                } else if (value.length > 6) {
+                    value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                } else if (value.length > 2) {
+                    value = value.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+                }
+                event.target.value = value;
+            });
+
+
+            registrationForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const nome = nomeInput.value.trim();
+                const email = emailInput.value.trim();
+                const cpf = cpfInput.value.replace(/\D/g, ''); // Remove formatting
+                const telefone = telefoneInput.value.replace(/\D/g, ''); // Remove formatting
+                const dataNascimento = dataNascimentoInput.value;
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const cartaoSus = cartaoSusInput.value.trim();
+
+                // Basic client-side validation
+                if (password !== confirmPassword) {
+                    showMessage('As senhas não coincidem. Por favor, digite novamente.', 'error');
+                    return;
+                }
+                if (password.length < 6) {
+                    showMessage('A senha deve ter pelo menos 6 caracteres.', 'error');
+                    return;
+                }
+                // Add more client-side validations as needed (e.g., CPF format, email regex)
+
+                console.log('Tentando cadastro com:', { nome, email, cpf, telefone, dataNascimento, cartaoSus });
+
+                try {
+                    // Make a POST request to your Flask backend registration endpoint
+                    const response = await fetch('/api/register', { // This endpoint needs to be created in Flask
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nome: nome,
+                            email: email,
+                            cpf: cpf,
+                            telefone: telefone,
+                            data_nascimento: dataNascimento,
+                            senha: password,
+                            cartao_sus: cartaoSus,
+                            tipo_usuario: 'paciente' // Assuming 'paciente' for now
+                        }),
+                    });
+
+                    const data = await response.json(); // Parse the JSON response
+
+                    if (response.ok) { // Check if the response status is 200-299
+                        showMessage('Cadastro realizado com sucesso! Você pode fazer login agora.', 'success');
+                        console.log('Cadastro bem-sucedido:', data);
+                        // Optionally redirect to login page after successful registration
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    } else {
+                        // Handle server-side errors (e.g., duplicate email/CPF, validation errors)
+                        showMessage(data.message || 'Erro no cadastro. Por favor, tente novamente.', 'error');
+                        console.error('Erro no cadastro:', data.message);
+                    }
+                } catch (error) {
+                    // Handle network errors or other unexpected issues
+                    showMessage('Ocorreu um erro ao conectar ao servidor. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede ou inesperado:', error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

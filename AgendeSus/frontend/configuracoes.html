@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <title>Configurações</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#1f5223', /* Cor do texto original */
+                        'sus-green': '#2f4f2f', /* Cor mais clara para elementos */
+                        'sus-light-gray': '#f2f2f2',
+                        'sus-button-green': '#1f5223', /* Cor do botão original */
+                        'sus-button-green-hover': '#16441b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white min-h-screen flex flex-col">
+
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+            <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        </div>
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home  </a>
+            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="meus-dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="#" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+            
+        </nav>
+    </header>
+
+    <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
+        <!-- Substituindo imagem local por placeholder -->
+        <img src="https://placehold.co/80x80/1f5223/ffffff?text=Logo" alt="logo" class="h-20 rounded-full mr-2">
+        AgendeSUS DF
+    </h1>
+
+    <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8">
+        <h2 class="text-sus-green-dark text-2xl font-bold mb-6 text-left">Configurações da Conta</h2>
+        <form id="configuracoesForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col md:col-span-2">
+                    <label class="font-bold mb-1 text-sus-green-dark text-left text-sm">Preferências de Notificação</label>
+                    <div class="flex flex-col space-y-2 p-3 border border-gray-300 rounded-md bg-white">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" id="receberEmails" name="receberEmails" class="form-checkbox h-5 w-5 text-sus-green-dark rounded-md">
+                            <span class="ml-2 text-gray-700">Receber e-mails de lembretes e informações</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" id="receberSms" name="receberSms" class="form-checkbox h-5 w-5 text-sus-green-dark rounded-md">
+                            <span class="ml-2 text-gray-700">Receber SMS de lembretes e alertas</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="submit" id="btnSalvarConfiguracoes"
+                        class="py-2 px-6 bg-blue-600 text-white font-bold rounded-md cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-md">
+                    Salvar Configurações
+                </button>
+            </div>
+        </form>
+
+        <h2 class="text-sus-green-dark text-2xl font-bold mb-6 text-left mt-8 pt-6 border-t border-gray-200">Alterar Senha</h2>
+        <form id="alterarSenhaForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col md:col-span-2">
+                    <label for="senhaAtual" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Senha Atual</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" placeholder="Digite sua senha atual" required
+                           class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col md:col-span-2">
+                    <label for="novaSenha" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Nova Senha</label>
+                    <input type="password" id="novaSenha" name="novaSenha" placeholder="Crie sua nova senha (mínimo 6 caracteres)" required
+                           class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col md:col-span-2">
+                    <label for="confirmarNovaSenha" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmarNovaSenha" name="confirmarNovaSenha" placeholder="Confirme sua nova senha" required
+                           class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="submit" id="btnAlterarSenha"
+                        class="py-2 px-6 bg-sus-button-green text-white font-bold rounded-md cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 shadow-md">
+                    Alterar Senha
+                </button>
+            </div>
+        </form>
+
+        <!-- Botão Sair da Conta adicionado dentro do container principal, abaixo do formulário de senha -->
+        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-center">
+            <button type="button" id="btnLogout"
+                    class="py-2 px-6 bg-red-600 text-white font-bold rounded-md cursor-pointer hover:bg-red-700 transition-colors duration-200 shadow-md">
+                Sair da Conta
+            </button>
+        </div>
+    </div>
+
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos do formulário de configurações gerais
+            const formularioConfiguracoes = document.getElementById('configuracoesForm');
+            const checkboxReceberEmails = document.getElementById('receberEmails');
+            const checkboxReceberSms = document.getElementById('receberSms');
+            const caixaMensagem = document.getElementById('messageBox');
+
+            // Referências aos elementos do formulário de alteração de senha
+            const formularioAlterarSenha = document.getElementById('alterarSenhaForm');
+            const inputSenhaAtual = document.getElementById('senhaAtual');
+            const inputNovaSenha = document.getElementById('novaSenha');
+            const inputConfirmarNovaSenha = document.getElementById('confirmarNovaSenha');
+
+            // Referência ao botão de logout
+            const botaoLogout = document.getElementById('btnLogout');
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'erro' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show'; // Reseta as classes e adiciona 'show'
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            /**
+             * Busca as configurações do usuário no backend e preenche o formulário.
+             */
+            async function buscarConfiguracoesUsuario() {
+                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
+                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+
+                try {
+                    const resposta = await fetch(`/api/configuracoes/${userId}`); // Endpoint no backend
+                    const dados = await resposta.json();
+
+                    if (resposta.ok) {
+                        // Preenche os campos do formulário com os dados recebidos
+                        checkboxReceberEmails.checked = dados.receber_emails;
+                        checkboxReceberSms.checked = dados.receber_sms;
+                        // O tema preferido foi removido do HTML, mas os dados ainda podem vir do backend
+                        // Se não for mais usado, pode ser ignorado ou removido da rota do backend
+                        // selectTemaPreferido.value = dados.tema_preferido || 'claro';
+
+                        showMessage('Configurações carregadas com sucesso!', 'sucesso');
+                    } else {
+                        showMessage(dados.message || 'Erro ao carregar configurações do usuário.', 'error');
+                        console.error('Erro ao carregar configurações:', dados);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao carregar configurações. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                }
+            }
+
+            // Event listener para o envio do formulário de configurações gerais
+            formularioConfiguracoes.addEventListener('submit', async (evento) => {
+                evento.preventDefault(); // Previne o envio padrão do formulário
+
+                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
+                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+
+                // Coleta os dados atualizados do formulário
+                const configuracoesAtualizadas = {
+                    receber_emails: checkboxReceberEmails.checked,
+                    receber_sms: checkboxReceberSms.checked,
+                    // tema_preferido: selectTemaPreferido.value // Removido
+                };
+
+                console.log('Tentando salvar configurações:', configuracoesAtualizadas);
+
+                try {
+                    // Faz uma requisição PUT para o endpoint de atualização no backend
+                    const resposta = await fetch(`/api/atualizar_configuracoes/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Bearer SEU_TOKEN_JWT' // Em um sistema real, inclua o token de autenticação
+                        },
+                        body: JSON.stringify(configuracoesAtualizadas),
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Configurações atualizadas com sucesso!', 'sucesso');
+                        console.log('Atualização de configurações bem-sucedida:', dadosResposta);
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao salvar configurações. Por favor, tente novamente.', 'error');
+                        console.error('Erro ao salvar configurações:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao salvar configurações. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede ou inesperado:', erro);
+                }
+            });
+
+            // NOVO: Event listener para o envio do formulário de alteração de senha
+            formularioAlterarSenha.addEventListener('submit', async (evento) => {
+                evento.preventDefault(); // Previne o envio padrão do formulário
+
+                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+                const senhaAtual = inputSenhaAtual.value;
+                const novaSenha = inputNovaSenha.value;
+                const confirmarNovaSenha = inputConfirmarNovaSenha.value;
+
+                // Validação no lado do cliente
+                if (novaSenha.length < 6) {
+                    showMessage('A nova senha deve ter pelo menos 6 caracteres.', 'error');
+                    return;
+                }
+                if (novaSenha !== confirmarNovaSenha) {
+                    showMessage('A nova senha e a confirmação não coincidem.', 'error');
+                    return;
+                }
+
+                console.log('Tentando alterar senha para o usuário:', userId);
+
+                try {
+                    const resposta = await fetch(`/api/alterar_senha/${userId}`, { // Novo endpoint no backend
+                        method: 'PUT', // Ou POST, dependendo da sua preferência
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Bearer SEU_TOKEN_JWT'
+                        },
+                        body: JSON.stringify({
+                            senha_atual: senhaAtual,
+                            nova_senha: novaSenha
+                        }),
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Senha alterada com sucesso!', 'sucesso');
+                        console.log('Alteração de senha bem-sucedida:', dadosResposta);
+                        // Limpa os campos de senha após o sucesso
+                        inputSenhaAtual.value = '';
+                        inputNovaSenha.value = '';
+                        inputConfirmarNovaSenha.value = '';
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao alterar senha. Por favor, tente novamente.', 'error');
+                        console.error('Erro ao alterar senha:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Ocorreu um erro de rede ao alterar a senha. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede ou inesperado durante a alteração de senha:', erro);
+                }
+            });
+
+
+            // Event listener para o botão "Sair da Conta"
+            botaoLogout.addEventListener('click', async (evento) => {
+                evento.preventDefault(); // Previne o comportamento padrão do botão
+
+                console.log('Tentando sair da conta...');
+
+                try {
+                    const resposta = await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Sessão encerrada com sucesso!', 'sucesso');
+                        console.log('Logout bem-sucedido:', dadosResposta);
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1000);
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao sair da conta. Por favor, tente novamente.', 'error');
+                        console.error('Erro ao sair:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Ocorreu um erro ao tentar sair da conta. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede ou inesperado durante o logout:', erro);
+                }
+            });
+
+            // Carrega as configurações do usuário quando a página é carregada
+            buscarConfiguracoesUsuario();
+        });
+    </script>
+</body>
+</html>

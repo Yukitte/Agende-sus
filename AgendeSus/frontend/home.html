@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <title>AgendeSUS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#1f5223', /* Cor do texto original */
+                        'sus-green': '#2f4f2f', /* Cor mais clara para elementos */
+                        'sus-light-gray': '#f2f2f2',
+                        'sus-button-green': '#1f5223', /* Cor do botão original */
+                        'sus-button-green-hover': '#16441b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white min-h-screen flex flex-col">
+
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 mr-2 rounded">
+            <img src="imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        </div>
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="#" class="text-sus-green-dark font-bold hover:underline">Home  </a>
+            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="meus-dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+        </nav>
+    </header>
+
+    <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
+        <!-- Substituindo imagem local por placeholder -->
+        <img src="imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+    </h1>
+
+    <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8 text-left">
+        <h2 class="text-sus-green-dark text-2xl font-bold mb-6" id="welcomeMessage">Bem-vindo(a) ao AgendeSUS!</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cartão para Solicitações -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                <h3 class="text-xl font-bold text-sus-green mb-3">Meus Agendamentos</h3>
+                <p class="text-gray-700 mb-4">Acompanhe o status das suas solicitações de agendamento e cirurgias.</p>
+                <a href="agendamento.html" class="inline-block bg-sus-button-green text-white py-2 px-4 rounded-md font-bold hover:bg-sus-button-green-hover transition-colors duration-200">Ver Solicitações</a>
+            </div>
+
+            <!-- Cartão para Meus Dados -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                <h3 class="text-xl font-bold text-sus-green mb-3">Meus Dados</h3>
+                <p class="text-gray-700 mb-4">Visualize e atualize suas informações pessoais e de contato.</p>
+                <a href="meus-dados.html" class="inline-block bg-sus-button-green text-white py-2 px-4 rounded-md font-bold hover:bg-sus-button-green-hover transition-colors duration-200">Editar Dados</a>
+            </div>
+
+            <!-- Cartão para Notificações (exemplo, pode ser uma lista ou link) -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                <h3 class="text-xl font-bold text-sus-green mb-3">Notificações</h3>
+                <p class="text-gray-700 mb-4">Fique por dentro de lembretes e atualizações importantes do sistema.</p>
+                <a href="notificacoes.html" class="inline-block bg-sus-button-green text-white py-2 px-4 rounded-md font-bold hover:bg-sus-button-green-hover transition-colors duration-200">Ver Notificações</a>
+            </div>
+            
+            <!-- Adicionar mais cartões conforme necessário, por exemplo, para "Agendar Consulta" -->
+        </div>
+    </div>
+
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos
+            const mensagemBoasVindas = document.getElementById('welcomeMessage');
+            const caixaMensagem = document.getElementById('messageBox');
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'erro' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show'; // Reseta as classes e adiciona 'show'
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            /**
+             * Busca os dados do usuário no backend e atualiza a mensagem de boas-vindas.
+             */
+            async function carregarDadosUsuario() {
+                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT.
+                // Para este exemplo, vamos simular que o ID do usuário logado é '1'.
+                const userId = '1';
+
+                try {
+                    const resposta = await fetch(`/api/meus_dados/${userId}`); // Reutilizando o endpoint de 'meus_dados'
+                    const dados = await resposta.json();
+
+                    if (resposta.ok) {
+                        if (dados.nome) {
+                            mensagemBoasVindas.textContent = `Bem-vindo(a), ${dados.nome.split(' ')[0]}!`; // Mostra apenas o primeiro nome
+                        }
+                    } else {
+                        console.error('Erro ao carregar dados do usuário para a Home:', dados.message);
+                        // showMessage(dados.message || 'Erro ao carregar dados.', 'error'); // Opcional, para não poluir a Home
+                    }
+                } catch (erro) {
+                    console.error('Erro de rede ao carregar dados do usuário para a Home:', erro);
+                    // showMessage('Erro de rede.', 'error'); // Opcional
+                }
+            }
+
+            // Carrega os dados do usuário quando a página é carregada
+            carregarDadosUsuario();
+        });
+    </script>
+</body>
+</html>

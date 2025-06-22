@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <title>Meus Dados</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        'sus-green-dark': '#1f5223', /* Cor do texto original */
+                        'sus-green': '#2f4f2f', /* Cor mais clara para elementos */
+                        'sus-light-gray': '#f2f2f2',
+                        'sus-button-green': '#1f5223', /* Cor do botão original */
+                        'sus-button-green-hover': '#16441b',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos personalizados para a caixa de mensagem */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Verde para sucesso */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .message-box.error {
+            background-color: #f44336; /* Vermelho para erro */
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="font-sans bg-white min-h-screen flex flex-col">
+
+    <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
+        <div class="logos flex items-center mb-4 sm:mb-0">
+            <!-- Substituindo imagens locais por placeholders -->
+            <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+            <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        </div>
+            <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home  </a>
+            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="#" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
+            
+        </nav>
+    </header>
+
+    <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
+        <!-- Substituindo imagem local por placeholder -->
+        <img src="./imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+        
+    </h1>
+
+    <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8">
+        <h2 class="text-sus-green-dark text-2xl font-bold mb-6 text-left">Meus Dados Pessoais</h2>
+        <form id="dadosPessoaisForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col">
+                    <label for="nome" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col">
+                    <label for="email" class="font-bold mb-1 text-sus-green-dark text-left text-sm">E-mail</label>
+                    <input type="email" id="email" name="email" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col">
+                    <label for="cpf" class="font-bold mb-1 text-sus-green-dark text-left text-sm">CPF</label>
+                    <input type="text" id="cpf" name="cpf" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col">
+                    <label for="telefone" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col">
+                    <label for="dataNascimento" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Data de Nascimento</label>
+                    <input type="date" id="dataNascimento" name="dataNascimento" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+                <div class="flex flex-col">
+                    <label for="genero" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Gênero</label>
+                    <select id="genero" name="genero" readonly
+                            class="p-3 border border-gray-300 rounded-md bg-gray-100 font-normal focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                        <option value="">-- Selecione --</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="flex flex-col md:col-span-2">
+                    <label for="endereco" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Endereço Completo</label>
+                    <textarea id="endereco" name="endereco" readonly
+                              class="p-3 border border-gray-300 rounded-md bg-gray-100 text-base resize-y h-24 focus:outline-none focus:ring-2 focus:ring-sus-green-dark"></textarea>
+                </div>
+                <div class="flex flex-col">
+                    <label for="cartaoSus" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Número do Cartão SUS</label>
+                    <input type="text" id="cartaoSus" name="cartaoSus" readonly
+                           class="p-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button" id="btnEditar"
+                        class="py-2 px-6 bg-sus-button-green text-white font-bold rounded-md cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 shadow-md">
+                    Editar Dados
+                </button>
+                <button type="submit" id="btnSalvar" style="display: none;"
+                        class="py-2 px-6 bg-blue-600 text-white font-bold rounded-md cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-md">
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Caixa de Mensagem para notificações -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências aos elementos do formulário
+            const formularioDadosPessoais = document.getElementById('dadosPessoaisForm');
+            const inputNome = document.getElementById('nome');
+            const inputEmail = document.getElementById('email');
+            const inputCpf = document.getElementById('cpf');
+            const inputTelefone = document.getElementById('telefone');
+            const inputDataNascimento = document.getElementById('dataNascimento');
+            const selectGenero = document.getElementById('genero');
+            const textareaEndereco = document.getElementById('endereco');
+            const inputCartaoSus = document.getElementById('cartaoSus');
+
+            const btnEditar = document.getElementById('btnEditar');
+            const btnSalvar = document.getElementById('btnSalvar');
+            const caixaMensagem = document.getElementById('messageBox');
+
+            // Array de campos editáveis (exceto CPF, email, cartaoSus que geralmente não mudam)
+            const camposEditaveis = [
+                inputNome, inputTelefone, inputDataNascimento,
+                selectGenero, textareaEndereco
+            ];
+
+            /**
+             * Exibe uma mensagem na caixa de mensagem.
+             * @param {string} mensagem - A mensagem a ser exibida.
+             * @param {string} tipo - 'sucesso' ou 'erro' para determinar o estilo.
+             */
+            function showMessage(mensagem, tipo) {
+                caixaMensagem.textContent = mensagem;
+                caixaMensagem.className = 'message-box show'; // Reseta as classes e adiciona 'show'
+                if (tipo === 'error') {
+                    caixaMensagem.classList.add('error');
+                } else {
+                    caixaMensagem.classList.remove('error');
+                }
+                setTimeout(() => {
+                    caixaMensagem.classList.remove('show');
+                }, 3000); // Esconde após 3 segundos
+            }
+
+            /**
+             * Alterna o modo de edição dos campos do formulário.
+             * @param {boolean} modoEdicao - True para modo de edição, False para modo de visualização.
+             */
+            function toggleEditMode(modoEdicao) {
+                camposEditaveis.forEach(campo => {
+                    campo.readOnly = !modoEdicao;
+                    if (modoEdicao) {
+                        campo.classList.remove('bg-gray-100');
+                        campo.classList.add('bg-white');
+                    } else {
+                        campo.classList.add('bg-gray-100');
+                        campo.classList.remove('bg-white');
+                    }
+                });
+
+                // Campos que nunca são editáveis diretamente pelo usuário (ID, CPF, Email, Cartão SUS)
+                inputCpf.readOnly = true;
+                inputEmail.readOnly = true;
+                inputCartaoSus.readOnly = true;
+
+                if (modoEdicao) {
+                    btnEditar.style.display = 'none';
+                    btnSalvar.style.display = 'block';
+                } else {
+                    btnEditar.style.display = 'block';
+                    btnSalvar.style.display = 'none';
+                }
+            }
+
+            /**
+             * Máscara de entrada para CPF.
+             * @param {Event} evento - O evento de input.
+             */
+            function aplicarMascaraCpf(evento) {
+                let valor = evento.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+                if (valor.length > 9) {
+                    valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+                } else if (valor.length > 6) {
+                    valor = valor.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
+                } else if (valor.length > 3) {
+                    valor = valor.replace(/^(\d{3})(\d{3})$/, '$1.$2');
+                }
+                evento.target.value = valor;
+            }
+
+            /**
+             * Máscara de entrada para Telefone.
+             * @param {Event} evento - O evento de input.
+             */
+            function aplicarMascaraTelefone(evento) {
+                let valor = evento.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+                if (valor.length > 10) {
+                    valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                } else if (valor.length > 6) {
+                    valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                } else if (valor.length > 2) {
+                    valor = valor.replace(/^(\d{2})(\d{0,5}).*/, '($1) $2');
+                }
+                evento.target.value = valor;
+            }
+
+            // Aplica as máscaras aos inputs relevantes
+            inputCpf.addEventListener('input', aplicarMascaraCpf);
+            inputTelefone.addEventListener('input', aplicarMascaraTelefone);
+
+
+            /**
+             * Busca os dados do usuário no backend e preenche o formulário.
+             */
+            async function buscarDadosUsuario() {
+                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
+                // Para este exemplo, vamos simular um ID de usuário ou um endpoint genérico.
+                // Substitua '1' pelo ID do usuário logado ou por uma forma de identificar o usuário
+                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+
+                try {
+                    const resposta = await fetch(`/api/meus_dados/${userId}`); // Endpoint no backend
+                    const dados = await resposta.json();
+
+                    if (resposta.ok) {
+                        // Preenche os campos do formulário com os dados recebidos
+                        inputNome.value = dados.nome || '';
+                        inputEmail.value = dados.email || '';
+                        inputCpf.value = dados.cpf || ''; // Aplica a máscara se necessário
+                        inputTelefone.value = dados.telefone || ''; // Aplica a máscara se necessário
+                        inputDataNascimento.value = dados.data_nascimento ? new Date(dados.data_nascimento).toISOString().split('T')[0] : '';
+                        selectGenero.value = dados.genero || '';
+                        textareaEndereco.value = dados.endereco_completo || '';
+                        inputCartaoSus.value = dados.cartao_sus || ''; // Dados específicos do Paciente
+
+                        showMessage('Dados do usuário carregados com sucesso!', 'sucesso');
+                    } else {
+                        showMessage(dados.message || 'Erro ao carregar dados do usuário.', 'error');
+                        console.error('Erro ao carregar dados:', dados);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao carregar dados do usuário. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede:', erro);
+                }
+            }
+
+            // Event listener para o botão "Editar Dados"
+            btnEditar.addEventListener('click', () => {
+                toggleEditMode(true); // Entra no modo de edição
+            });
+
+            // Event listener para o envio do formulário (botão "Salvar Alterações")
+            formularioDadosPessoais.addEventListener('submit', async (evento) => {
+                evento.preventDefault(); // Previne o envio padrão do formulário
+
+                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
+                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+
+                // Coleta os dados atualizados do formulário
+                const dadosAtualizados = {
+                    nome: inputNome.value.trim(),
+                    telefone: inputTelefone.value.replace(/\D/g, ''),
+                    data_nascimento: inputDataNascimento.value,
+                    genero: selectGenero.value,
+                    endereco_completo: textareaEndereco.value.trim(),
+                    // CPF, email e cartao_sus não são enviados para edição direta aqui
+                    // Eles seriam gerenciados em um processo separado se houvesse necessidade de alterá-los
+                };
+
+                // Validação básica
+                if (!dadosAtualizados.nome || !dadosAtualizados.telefone || !dadosAtualizados.data_nascimento || !dadosAtualizados.endereco_completo) {
+                    showMessage('Por favor, preencha todos os campos obrigatórios para salvar.', 'error');
+                    return;
+                }
+
+                console.log('Tentando salvar dados:', dadosAtualizados);
+
+                try {
+                    // Faz uma requisição PUT para o endpoint de atualização no backend
+                    const resposta = await fetch(`/api/atualizar_meus_dados/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // 'Authorization': 'Bearer SEU_TOKEN_JWT' // Em um sistema real, inclua o token de autenticação
+                        },
+                        body: JSON.stringify(dadosAtualizados),
+                    });
+
+                    const dadosResposta = await resposta.json();
+
+                    if (resposta.ok) {
+                        showMessage('Dados atualizados com sucesso!', 'sucesso');
+                        console.log('Atualização bem-sucedida:', dadosResposta);
+                        toggleEditMode(false); // Volta para o modo de visualização
+                        // Opcional: Recarregar dados para garantir consistência
+                        // buscarDadosUsuario();
+                    } else {
+                        showMessage(dadosResposta.message || 'Erro ao salvar dados. Por favor, tente novamente.', 'error');
+                        console.error('Erro ao salvar:', dadosResposta);
+                    }
+                } catch (erro) {
+                    showMessage('Erro de rede ao salvar dados. Tente novamente mais tarde.', 'error');
+                    console.error('Erro de rede ou inesperado:', erro);
+                }
+            });
+
+            // Carrega os dados do usuário quando a página é carregada
+            buscarDadosUsuario();
+            toggleEditMode(false); // Inicia no modo de visualização
+        });
+    </script>
+</body>
+</html>
