@@ -53,7 +53,7 @@ class ProfissionalSaude(db.Model):
     
     def get_agendamentos_periodo(self, data_inicio, data_fim):
         """Retorna agendamentos do profissional em um período"""
-        from models.agendamento import Agendamento
+        from models_agendamento import Agendamento
         
         return Agendamento.query.filter(
             Agendamento.profissional_id == self.id,

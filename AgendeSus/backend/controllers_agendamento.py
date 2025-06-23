@@ -1,8 +1,8 @@
 # controllers/agendamento.py
 from datetime import datetime, timedelta
 from app_init import db
-from models.agendamento import Agendamento, Hospital, ListaEspera, Notificacao
-from models.usuarios import Paciente, ProfissionalSaude
+from models_agendamento import Agendamento, Hospital, ListaEspera, Notificacao
+from models_usuarios import Paciente, ProfissionalSaude
 
 class AgendamentoController:
     @staticmethod

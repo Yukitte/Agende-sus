@@ -3,9 +3,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from datetime import datetime, timedelta
 from functools import wraps
 
-from models.usuarios import Usuario, Paciente, ProfissionalSaude
-from models.agendamento import Agendamento, Hospital, ListaEspera, Notificacao, Chat
-from controllers.agendamento import AgendamentoController, ListaEsperaController, NotificacaoController
+from models_usuarios import Usuario, Paciente, ProfissionalSaude
+from models_agendamento import Agendamento, Hospital, ListaEspera, Notificacao, Chat
+from controllers_agendamento import AgendamentoController, ListaEsperaController, NotificacaoController
 
 # Blueprint para agendamentos
 agendamento_bp = Blueprint('agendamento', __name__)
@@ -19,4 +19,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def paciente_required(f
+def paciente_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session or session.get('user_type') != 'paciente':
+            flash('Acesso permitido apenas para pacientes.', 'warning')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function

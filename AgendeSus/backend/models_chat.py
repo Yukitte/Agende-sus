@@ -3,7 +3,7 @@ Modelo para Chat - AgendeSUS DF
 """
 
 from app_init import db
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import desc
 
 
@@ -111,8 +111,8 @@ class Chat(db.Model):
     @staticmethod
     def get_conversas_usuario(usuario_id):
         """Retorna todas as conversas de um usuário"""
-        from models.agendamento import Agendamento
-        from models.usuarios import Usuario
+        from models_agendamento import Agendamento
+        from models_usuarios import Usuario
         
         # Buscar agendamentos onde o usuário participa
         subquery = db.session.query(Chat.agendamento_id)\

@@ -24,7 +24,7 @@ def create_app(config_name='development'):
     app = Flask(__name__)
     
     # Configurações
-    from app.config import config
+    from app_config import config
     app.config.from_object(config[config_name])
     
     # Inicializar extensões

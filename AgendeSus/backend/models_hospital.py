@@ -57,7 +57,7 @@ class Hospital(db.Model):
     
     def verificar_capacidade(self, data_cirurgia):
         """Verifica se há capacidade disponível para determinada data"""
-        from models.agendamento import Agendamento
+        from models_agendamento import Agendamento
         
         agendamentos_data = Agendamento.query.filter(
             Agendamento.hospital_id == self.id,

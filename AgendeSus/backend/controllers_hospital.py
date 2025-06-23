@@ -3,7 +3,7 @@ Controller para Hospital - AgendeSUS DF
 """
 
 from app_init import db
-from models.hospital import Hospital
+from models_hospital import Hospital
 from datetime import datetime, timedelta
 import json
 
@@ -168,7 +168,7 @@ class HospitalController:
     def get_ocupacao_periodo(hospital_id, data_inicio, data_fim):
         """Retorna ocupação do hospital em um período"""
         try:
-            from models.agendamento import Agendamento
+            from models_agendamento import Agendamento
             
             # Buscar agendamentos no período
             agendamentos = Agendamento.query.filter(
@@ -177,6 +177,6 @@ class HospitalController:
                 Agendamento.status.in_(['agendado', 'confirmado', 'realizado'])
             ).all()
         except:
-            models.agendamento = FileNotFoundError
+            models_agendamento = FileNotFoundError
             # Agrupar por data
             

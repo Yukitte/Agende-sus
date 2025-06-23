@@ -2,9 +2,9 @@
 # AgendeSUS DF - Controller para Sistema de Notificações
 
 from app_init import db, mail
-from models.models_notificacao import Notificacao, TemplateNotificacao, ConfiguracaoNotificacao
-from models.models_agendamento import Agendamento
-from models.models_usuarios import Usuario
+from models_notificacao import Notificacao, TemplateNotificacao, ConfiguracaoNotificacao
+from models_agendamento import Agendamento
+from models_usuarios import Usuario
 from flask_mail import Message
 from datetime import datetime, timedelta
 import logging
