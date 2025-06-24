@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="/imagens/icone.png" /> 
+    <link rel="icon" type="image/png" href="imagens/icone.png" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgendeSUS - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,12 +49,12 @@
 <body class="font-sans bg-white text-center min-h-screen flex flex-col">
 
     <header class="flex flex-row justify-start items-center p-4 gap-4">
-        <img src="/imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
-        <img src="/imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        <img src="imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+        <img src="imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
     </header>
 
     <h1 class="text-sus-green mb-8 flex items-center justify-center">
-        <img src="/imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+        <img src="imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
     </h1>
 
     <div class="login-box bg-sus-light-gray p-8 w-80 mx-auto rounded-3xl shadow-lg flex flex-col items-center">
@@ -80,7 +80,7 @@
             </button>
 
             <div class="registro-novo mt-5 text-sm"> Novo Usuário? 
-                <a href="/cadastro.html" class="text-sus-green font-bold hover:underline">Cadastrar-se</a>
+                <a href="cadastro.html" class="text-sus-green font-bold hover:underline">Cadastrar-se</a>
             </div>
         </form>
     </div>
@@ -122,7 +122,7 @@
 
                 try {
                     // *** CORREÇÃO AQUI: Mudei a porta de 5000 para 5500 ***
-                    const response = await fetch('http://127.0.0.1:5501/login', { 
+                    const response = await fetch('http://127.0.0.1:5500/login', { 
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/imagens/icone.png" /> 
+    <link rel="icon" type="image/png" href="imagens/icone.png" /> 
     <title>Meus Dados</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -54,8 +54,8 @@
 
     <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
         <div class="logos flex items-center mb-4 sm:mb-0">
-            <img src="/imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
-            <img src="/imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+            <img src="imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+            <img src="imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
         </div>
         <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
             <a href="/home.html" class="text-sus-green-dark font-bold hover:underline">Home</a>
@@ -66,7 +66,7 @@
     </header>
 
     <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
-        <img src="/imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
+        <img src="imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
     </h1>
 
     <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8">
@@ -263,7 +263,7 @@
 
                 try {
                     // *** CORREÇÃO AQUI: Adicionado a URL completa do backend (porta 5500) ***
-                    const resposta = await fetch('http://127.0.0.1:5501/api/meus_dados', {
+                    const resposta = await fetch('http://127.0.0.1:5500/api/meus_dados', {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
