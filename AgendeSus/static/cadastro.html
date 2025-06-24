@@ -213,7 +213,7 @@
 
                 try {
                     // Make a POST request to your Flask backend registration endpoint
-                    const response = await fetch('/api/register', { // This endpoint needs to be created in Flask
+                    const response = await fetch('/http://127.0.0.1:5500/register', { // This endpoint needs to be created in Flask
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -237,7 +237,7 @@
                         console.log('Cadastro bem-sucedido:', data);
                         // Optionally redirect to login page after successful registration
                         setTimeout(() => {
-                            window.location.href = 'login.html';
+                            window.location.href = 'home.html';
                         }, 2000);
                     } else {
                         // Handle server-side errors (e.g., duplicate email/CPF, validation errors)

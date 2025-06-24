@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <link rel="icon" type="image/png" href="/imagens/icone.png" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgendeSUS - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,13 +49,12 @@
 <body class="font-sans bg-white text-center min-h-screen flex flex-col">
 
     <header class="flex flex-row justify-start items-center p-4 gap-4">
-        <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
-        <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+        <img src="/imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+        <img src="/imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
     </header>
 
     <h1 class="text-sus-green mb-8 flex items-center justify-center">
-        <img src="./imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
-      
+        <img src="/imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
     </h1>
 
     <div class="login-box bg-sus-light-gray p-8 w-80 mx-auto rounded-3xl shadow-lg flex flex-col items-center">
@@ -64,13 +63,13 @@
             <div class="mb-4">
                 <label for="email" class="block text-left text-sus-green mb-1 text-sm font-medium">E-mail</label>
                 <input type="email" id="email" placeholder="Digite seu e-mail" required
-                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
             </div>
 
             <div class="mb-4">
                 <label for="password" class="block text-left text-sus-green mb-1 text-sm font-medium">Senha</label>
                 <input type="password" id="password" placeholder="Digite sua senha" required
-                       class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
+                        class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sus-green">
             </div>
 
             <a href="#" class="text-sus-green text-sm text-right block mb-4 hover:underline">Esqueci minha senha</a>
@@ -80,14 +79,12 @@
                 Entrar
             </button>
 
-            <div class="registro-novo">
-                <a href="#" class="texto-verde">Novo Usuário?</a>
-                <a href="cadastro.html" class="texto-verde">Cadastrar-se</a>
+            <div class="registro-novo mt-5 text-sm"> Novo Usuário? 
+                <a href="/cadastro.html" class="text-sus-green font-bold hover:underline">Cadastrar-se</a>
             </div>
         </form>
     </div>
 
-    <!-- Message Box for notifications -->
     <div id="messageBox" class="message-box"></div>
 
     <script>
@@ -98,9 +95,9 @@
             const messageBox = document.getElementById('messageBox');
 
             /**
-             
-             * @param {string} message
-             * @param {string} type
+             * Exibe uma mensagem na caixa de notificação.
+             * @param {string} message - A mensagem a ser exibida.
+             * @param {string} type - 'success' para sucesso (verde) ou 'error' para erro (vermelho).
              */
             function showMessage(message, type) {
                 messageBox.textContent = message;
@@ -124,13 +121,13 @@
                 console.log('Tentando login com:', { email, password });
 
                 try {
-                    
-                    const response = await fetch('/api/login', { 
+                    // *** CORREÇÃO AQUI: Mudei a porta de 5000 para 5500 ***
+                    const response = await fetch('http://127.0.0.1:5501/login', { 
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ email, password }),
+                        body: JSON.stringify({ email, senha: password }),
                     });
 
                     const data = await response.json(); 
@@ -138,13 +135,25 @@
                     if (response.ok) { 
                         showMessage('Login realizado com sucesso!', 'success');
                         console.log('Login bem-sucedido:', data);
-                        
+
+                        // **SALVAR O TOKEN E REDIRECIONAR**
+                        if (data.token) {
+                            localStorage.setItem('access_token', data.token);
+                            localStorage.setItem('user_name', data.nome);
+                            localStorage.setItem('user_type', data.tipo);
+
+                            setTimeout(() => {
+                                window.location.href = '/home.html'; 
+                            }, 1500); 
+                        } else {
+                             showMessage('Login bem-sucedido, mas nenhum token recebido.', 'warning');
+                        }
                     } else {
-                        showMessage(data.message || 'Erro no login. Por favor, tente novamente.', 'error');
+                        showMessage(data.message || 'Erro no login. Credenciais inválidas.', 'error');
                         console.error('Erro no login:', data.message);
                     }
                 } catch (error) {
-                    showMessage('Ocorreu um erro ao conectar ao servidor. Tente novamente mais tarde.', 'error');
+                    showMessage('Ocorreu um erro ao conectar ao servidor. Verifique se o backend está rodando e na porta correta.', 'error');
                     console.error('Erro de rede ou inesperado:', error);
                 }
             });

@@ -1,0 +1,18 @@
+AgendeSus
+├── backend/           
+│   ├── app.py
+│   └── models.py
+├── static/             
+│   ├── home.html
+│   ├── login.html
+│   ├── cadastro.html
+│   ├── meus_dados.html
+│   ├── agendamento.html
+│   ├── configuracoes.html
+│   └── imagens/       
+│       ├── icone.png
+│       ├── sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png
+│       ├── gdf.png
+│       └── logo.png
+└── instance/           
+    └── database.db

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="./imagens/icone.png" /> 
+    <link rel="icon" type="image/png" href="/imagens/icone.png" /> 
     <title>Meus Dados</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -55,23 +54,19 @@
 
     <header class="flex flex-col sm:flex-row justify-between items-center p-4 sm:px-10 border-b border-gray-300">
         <div class="logos flex items-center mb-4 sm:mb-0">
-            <!-- Substituindo imagens locais por placeholders -->
-            <img src="./imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
-            <img src="./imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
+            <img src="/imagens/sus-sistema-unico-de-saude-logo-png_seeklogo-173547.png" alt="Logo SUS" class="h-10 rounded">
+            <img src="/imagens/gdf.png" alt="Logo GDF" class="h-10 rounded">
         </div>
-            <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
-            <a href="home.html" class="text-sus-green-dark font-bold hover:underline">Home  </a>
-            <a href="agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
-            <a href="#" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
-            <a href="configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
-            
+        <nav class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+            <a href="/home.html" class="text-sus-green-dark font-bold hover:underline">Home</a>
+            <a href="/agendamento.html" class="text-sus-green-dark font-bold hover:underline">Meus Agendamentos</a>
+            <a href="/meus_dados.html" class="text-sus-green-dark font-bold hover:underline">Meus dados</a>
+            <a href="/configuracoes.html" class="text-sus-green-dark font-bold hover:underline">Configurações</a>
         </nav>
     </header>
 
     <h1 class="text-sus-green-dark mb-8 mt-6 text-3xl font-bold flex items-center justify-center">
-        <!-- Substituindo imagem local por placeholder -->
-        <img src="./imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
-        
+        <img src="/imagens/logo.png" alt="logo" class="h-20 rounded-full mr-2">
     </h1>
 
     <div class="container mx-auto max-w-4xl p-6 bg-gray-50 rounded-lg shadow-lg mb-8">
@@ -105,12 +100,9 @@
                 </div>
                 <div class="flex flex-col">
                     <label for="genero" class="font-bold mb-1 text-sus-green-dark text-left text-sm">Gênero</label>
-                    <select id="genero" name="genero" readonly
-                            class="p-3 border border-gray-300 rounded-md bg-gray-100 font-normal focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
+                    <select id="genero" name="genero" disabled class="p-3 border border-gray-300 rounded-md bg-gray-100 font-normal focus:outline-none focus:ring-2 focus:ring-sus-green-dark">
                         <option value="">-- Selecione --</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                        <option value="Outro">Outro</option>
+                        <option value="Masculino">Masculino</option> <option value="Feminino">Feminino</option>   <option value="Outro">Outro</option>
                     </select>
                 </div>
                 <div class="flex flex-col md:col-span-2">
@@ -127,18 +119,17 @@
 
             <div class="flex justify-end gap-4 mt-6">
                 <button type="button" id="btnEditar"
-                        class="py-2 px-6 bg-sus-button-green text-white font-bold rounded-md cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 shadow-md">
+                               class="py-2 px-6 bg-sus-button-green text-white font-bold rounded-md cursor-pointer hover:bg-sus-button-green-hover transition-colors duration-200 shadow-md">
                     Editar Dados
                 </button>
                 <button type="submit" id="btnSalvar" style="display: none;"
-                        class="py-2 px-6 bg-blue-600 text-white font-bold rounded-md cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-md">
+                               class="py-2 px-6 bg-blue-600 text-white font-bold rounded-md cursor-pointer hover:bg-blue-700 transition-colors duration-200 shadow-md">
                     Salvar Alterações
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Caixa de Mensagem para notificações -->
     <div id="messageBox" class="message-box"></div>
 
     <script>
@@ -188,7 +179,15 @@
              */
             function toggleEditMode(modoEdicao) {
                 camposEditaveis.forEach(campo => {
-                    campo.readOnly = !modoEdicao;
+                    // Para inputs e textareas, use readOnly
+                    if (campo.tagName === 'INPUT' || campo.tagName === 'TEXTAREA') {
+                        campo.readOnly = !modoEdicao;
+                    }
+                    // Para selects, use disabled
+                    if (campo.tagName === 'SELECT') {
+                        campo.disabled = !modoEdicao;
+                    }
+
                     if (modoEdicao) {
                         campo.classList.remove('bg-gray-100');
                         campo.classList.add('bg-white');
@@ -251,35 +250,56 @@
 
             /**
              * Busca os dados do usuário no backend e preenche o formulário.
+             * Utiliza o token JWT do localStorage para autenticação.
              */
             async function buscarDadosUsuario() {
-                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
-                // Para este exemplo, vamos simular um ID de usuário ou um endpoint genérico.
-                // Substitua '1' pelo ID do usuário logado ou por uma forma de identificar o usuário
-                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
+                const accessToken = localStorage.getItem('access_token');
+                if (!accessToken) {
+                    showMessage('Você não está logado. Por favor, faça login para ver seus dados.', 'error');
+                    // Descomente a linha abaixo para redirecionar para o login automaticamente
+                    // window.location.href = '/login.html'; 
+                    return;
+                }
 
                 try {
-                    const resposta = await fetch(`/api/meus_dados/${userId}`); // Endpoint no backend
+                    // *** CORREÇÃO AQUI: Adicionado a URL completa do backend (porta 5500) ***
+                    const resposta = await fetch('http://127.0.0.1:5501/api/meus_dados', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}` // Inclui o token JWT
+                        },
+                    });
                     const dados = await resposta.json();
 
                     if (resposta.ok) {
                         // Preenche os campos do formulário com os dados recebidos
                         inputNome.value = dados.nome || '';
                         inputEmail.value = dados.email || '';
-                        inputCpf.value = dados.cpf || ''; // Aplica a máscara se necessário
-                        inputTelefone.value = dados.telefone || ''; // Aplica a máscara se necessário
-                        inputDataNascimento.value = dados.data_nascimento ? new Date(dados.data_nascimento).toISOString().split('T')[0] : '';
+                        // Formata CPF e Telefone ao carregar, se necessário, usando as máscaras
+                        // Certifique-se que o CPF retornado do backend não vem formatado para esta máscara funcionar
+                        inputCpf.value = dados.cpf ? dados.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4') : '';
+                        // Certifique-se que o telefone retornado do backend não vem formatado para esta máscara funcionar
+                        inputTelefone.value = dados.telefone ? dados.telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3') : '';
+                        
+                        inputDataNascimento.value = dados.data_nascimento || ''; // Já deve vir como YYYY-MM-DD
                         selectGenero.value = dados.genero || '';
                         textareaEndereco.value = dados.endereco_completo || '';
-                        inputCartaoSus.value = dados.cartao_sus || ''; // Dados específicos do Paciente
+                        inputCartaoSus.value = dados.cartao_sus || '';
 
                         showMessage('Dados do usuário carregados com sucesso!', 'sucesso');
-                    } else {
+                    } else if (resposta.status === 401) {
+                         showMessage('Sessão expirada ou inválida. Faça login novamente.', 'error');
+                         localStorage.removeItem('access_token'); // Limpa token inválido
+                         // Descomente a linha abaixo para redirecionar para o login automaticamente
+                         // window.location.href = '/login.html'; // Redireciona para login
+                    }
+                    else {
                         showMessage(dados.message || 'Erro ao carregar dados do usuário.', 'error');
                         console.error('Erro ao carregar dados:', dados);
                     }
                 } catch (erro) {
-                    showMessage('Erro de rede ao carregar dados do usuário. Tente novamente mais tarde.', 'error');
+                    showMessage('Erro de rede ao carregar dados do usuário. Verifique se o backend está rodando e na porta correta.', 'error');
                     console.error('Erro de rede:', erro);
                 }
             }
@@ -293,35 +313,46 @@
             formularioDadosPessoais.addEventListener('submit', async (evento) => {
                 evento.preventDefault(); // Previne o envio padrão do formulário
 
-                // Em um cenário real, você obteria o ID do usuário da sessão ou de um token JWT
-                const userId = '1'; // Exemplo: Supondo que o usuário logado tenha ID 1
-
+                const accessToken = localStorage.getItem('access_token');
+                if (!accessToken) {
+                    showMessage('Você não está logado. Por favor, faça login.', 'error');
+                    return;
+                }
+                
                 // Coleta os dados atualizados do formulário
                 const dadosAtualizados = {
                     nome: inputNome.value.trim(),
-                    telefone: inputTelefone.value.replace(/\D/g, ''),
-                    data_nascimento: inputDataNascimento.value,
+                    // Remove formatação do telefone antes de enviar
+                    telefone: inputTelefone.value.replace(/\D/g, ''), 
+                    data_nascimento: inputDataNascimento.value, // Já deve estar no formato YYYY-MM-DD
                     genero: selectGenero.value,
                     endereco_completo: textareaEndereco.value.trim(),
                     // CPF, email e cartao_sus não são enviados para edição direta aqui
                     // Eles seriam gerenciados em um processo separado se houvesse necessidade de alterá-los
                 };
 
-                // Validação básica
-                if (!dadosAtualizados.nome || !dadosAtualizados.telefone || !dadosAtualizados.data_nascimento || !dadosAtualizados.endereco_completo) {
-                    showMessage('Por favor, preencha todos os campos obrigatórios para salvar.', 'error');
+                // Validação básica (ajuste conforme a necessidade do seu backend)
+                if (!dadosAtualizados.nome || !dadosAtualizados.telefone || !dadosAtualizados.data_nascimento || 
+                    !dadosAtualizados.genero || !dadosAtualizados.endereco_completo) {
+                    showMessage('Por favor, preencha todos os campos obrigatórios (Nome, Telefone, Data de Nascimento, Gênero, Endereço).', 'error');
+                    return;
+                }
+                
+                // Validação específica para o formato do telefone (após remover máscara)
+                if (!dadosAtualizados.telefone.match(/^\d{10,11}$/)) {
+                    showMessage('Telefone inválido. Deve conter 10 ou 11 dígitos.', 'error');
                     return;
                 }
 
                 console.log('Tentando salvar dados:', dadosAtualizados);
 
                 try {
-                    // Faz uma requisição PUT para o endpoint de atualização no backend
-                    const resposta = await fetch(`/api/atualizar_meus_dados/${userId}`, {
+                    // *** CORREÇÃO AQUI: Adicionado a URL completa do backend (porta 5500) ***
+                    const resposta = await fetch(`http://127.0.0.1:5500/api/atualizar_meus_dados`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
-                            // 'Authorization': 'Bearer SEU_TOKEN_JWT' // Em um sistema real, inclua o token de autenticação
+                            'Authorization': `Bearer ${accessToken}` // Inclui o token de autenticação
                         },
                         body: JSON.stringify(dadosAtualizados),
                     });
@@ -333,13 +364,18 @@
                         console.log('Atualização bem-sucedida:', dadosResposta);
                         toggleEditMode(false); // Volta para o modo de visualização
                         // Opcional: Recarregar dados para garantir consistência
-                        // buscarDadosUsuario();
+                        // await buscarDadosUsuario(); // Pode recarregar para ter certeza que os campos estão atualizados
+                    } else if (resposta.status === 401) {
+                         showMessage('Sessão expirada ou inválida. Faça login novamente.', 'error');
+                         localStorage.removeItem('access_token'); // Limpa token inválido
+                         // Descomente a linha abaixo para redirecionar para o login automaticamente
+                         // window.location.href = '/login.html'; // Redireciona para login
                     } else {
                         showMessage(dadosResposta.message || 'Erro ao salvar dados. Por favor, tente novamente.', 'error');
                         console.error('Erro ao salvar:', dadosResposta);
                     }
                 } catch (erro) {
-                    showMessage('Erro de rede ao salvar dados. Tente novamente mais tarde.', 'error');
+                    showMessage('Erro de rede ao salvar dados. Verifique se o backend está rodando e na porta correta.', 'error');
                     console.error('Erro de rede ou inesperado:', erro);
                 }
             });
